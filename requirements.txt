@@ -1,0 +1,10 @@
+# Snapdeal Virtual KAM — voice bot for Snapdeal sellers (FastAPI + static frontend)
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+requests==2.32.2
+gnani-vachana==0.9.0
+
+# Tests only
+pytest==8.3.1
+httpx==0.28.1

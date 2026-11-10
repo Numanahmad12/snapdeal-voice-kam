@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snapdeal Virtual KAM — Voice Assistant for Sellers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+  <header class="head">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>
+      </div>
+      <div>
+        <h1>Snapdeal <span>Virtual KAM</span></h1>
+        <p class="tagline">Your AI Key Account Manager, on a call. Talk about your sales — Asha listens, asks the right questions, and helps you fix it.</p>
+      </div>
+    </div>
+    <p class="status-pill" id="health"><span class="dot"></span><span id="healthText">Checking backend…</span></p>
+  </header>
+
+  <!-- Setup -->
+  <section class="card" id="setupCard" aria-label="Start your call">
+    <h2>Talk to your Virtual KAM</h2>
+    <p class="sub">Asha will greet you, listen to what's happening with your sales, ask a few follow-up questions, and suggest practical actions — all by voice. No typing needed.</p>
+    <label class="field-label">Language</label>
+    <div class="lang-toggle" role="radiogroup" aria-label="Language">
+      <button type="button" class="lang-btn selected" data-lang="en-IN" role="radio" aria-checked="true">English</button>
+      <button type="button" class="lang-btn" data-lang="hi-IN" role="radio" aria-checked="false">हिन्दी</button>
+    </div>
+    <button type="button" class="primary big" id="startBtn"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>Start call with Asha</button>
+    <p class="small hint">Voice-first: speak into your mic, Asha replies out loud. The full conversation shows on screen as you go.</p>
+    <div class="snapshot" aria-label="Seller account snapshot — mock data">
+      <div class="snapshot-head">
+        <strong>Seller snapshot</strong>
+        <span class="snapshot-tag">Mock data · assignment brief</span>
+      </div>
+      <dl class="metrics">
+        <div class="metric">
+          <dt>Sales</dt>
+          <dd><span class="m-now">₹1,35,000</span><span class="m-was">was ₹2,00,000</span><span class="m-delta down">−32.5%</span></dd>
+        </div>
+        <div class="metric">
+          <dt>Orders</dt>
+          <dd><span class="m-now">270</span><span class="m-was">was 400</span><span class="m-delta down">−32.5%</span></dd>
+        </div>
+        <div class="metric">
+          <dt>Cancellation rate</dt>
+          <dd><span class="m-now">14%</span><span class="m-was">was 8%</span><span class="m-delta down">+6 pts</span></dd>
+        </div>
+        <div class="metric">
+          <dt>Average selling price</dt>
+          <dd><span class="m-now">₹500</span><span class="m-was">was ₹500</span><span class="m-delta flat">Flat</span></dd>
+        </div>
+        <div class="metric">
+          <dt>Out-of-stock products</dt>
+          <dd><span class="m-now">18</span><span class="m-was">was 5</span><span class="m-delta down">+13</span></dd>
+        </div>
+      </dl>
+      <p class="snapshot-note">No real Snapdeal data is used.</p>
+    </div>
+    <p class="small" id="setupError" role="alert" hidden></p>
+  </section>
+
+  <!-- Call -->
+  <section class="card" id="callCard" aria-label="Call in progress" hidden>
+    <div class="progress-row">
+      <div class="progress" id="progress">Call in progress</div>
+      <button type="button" class="end-btn" id="endBtn">End call &amp; get summary</button>
+    </div>
+
+    <div class="stage">
+      <div class="person" id="kamPanel">
+        <div class="avatar kam" id="kamAvatar" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>
+        </div>
+        <div style="flex:1; min-width:0">
+          <div class="who">Asha — Virtual KAM <span class="live" id="speakState">· listening</span></div>
+          <h2 id="replyText" class="question"></h2>
+          <div class="eq" id="kamEq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <audio id="replyAudio" controls autoplay></audio>
+        </div>
+      </div>
+    </div>
+
+    <div class="record-zone">
+      <button type="button" class="mic-btn" id="recordBtn" aria-pressed="false" aria-label="Record your message"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg></button>
+      <div class="mic-label" id="micLabel">Tap the mic and speak</div>
+      <div class="mic-sub" id="recordState" aria-live="polite"></div>
+      <canvas class="wave" id="waveCanvas" width="420" height="44" aria-hidden="true"></canvas>
+      <div class="record-timer" id="recordTimer"></div>
+    </div>
+
+    <p class="small busy" id="busy" role="status" hidden><span class="dots"><i></i><i></i><i></i></span> Listening and thinking…</p>
+    <p class="small" id="callError" role="alert" hidden></p>
+    <p class="small" id="fallbackNote" role="note" hidden>Note: the AI brain is not connected right now, so Asha is answering from the standard guidance for this seller's data. Set GROQ_API_KEY on the backend for live AI replies.</p>
+
+    <div id="conversationLog" aria-live="polite"></div>
+  </section>
+
+  <!-- Summary -->
+  <section class="card" id="summaryCard" aria-label="Call summary" hidden>
+    <div class="summary-head">
+      <span class="summary-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></span>
+      <div>
+        <h2>Call summary</h2>
+        <p class="summary-kicker">Call complete — here is what Asha found and what to do next.</p>
+      </div>
+    </div>
+    <p class="summary-lead" id="summaryText"></p>
+    <audio id="summaryAudio" controls></audio>
+    <div class="sum-group sum-bad">
+      <h3>Key issues</h3>
+      <ul class="clean bad" id="issuesList"></ul>
+    </div>
+    <div class="sum-group sum-good">
+      <h3>Recommended actions</h3>
+      <ul class="clean good" id="recommendationsList"></ul>
+    </div>
+    <div class="sum-group sum-fix">
+      <h3>Next steps</h3>
+      <ul class="clean fix" id="nextStepsList"></ul>
+    </div>
+    <button type="button" class="primary" id="againBtn">Start a new call</button>
+  </section>
+
+  <footer class="foot">
+    Snapdeal Virtual KAM · Demo prototype built for the Snapdeal AI First Intern assignment.<br>
+    Voice: Gnani Prisma v2.5 (speech-to-text) + Timbre v2.5 (text-to-speech) · Brain: Groq openai/gpt-oss-120b.<br>
+    All seller data shown is mock data from the assignment brief.
+  </footer>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+let sessionId = null;
+let language = "en-IN";
+let mediaRecorder = null;
+let audioChunks = [];
+let recordTimer = null;
+let recording = false;
+
+// --- live waveform + timer ---
+let audioCtx = null, analyser = null, waveRaf = null, recordStart = 0, timerInt = null;
+const waveCanvas = $("waveCanvas");
+const waveCtx = waveCanvas.getContext("2d");
+
+function drawWave() {
+  if (!analyser) return;
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(data);
+  const w = waveCanvas.width, h = waveCanvas.height;
+  waveCtx.clearRect(0, 0, w, h);
+  const bars = 48, bw = w / bars;
+  for (let i = 0; i < bars; i++) {
+    const v = data[Math.floor(i * data.length / bars)] / 255;
+    const bh = Math.max(3, v * h);
+    waveCtx.fillStyle = recording ? "#e40046" : "#e87ba0";
+    waveCtx.fillRect(i * bw + 1, (h - bh) / 2, bw - 2, bh);
+  }
+  waveRaf = requestAnimationFrame(drawWave);
+}
+function startWave(stream) {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const src = audioCtx.createMediaStreamSource(stream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    src.connect(analyser);
+    drawWave();
+  } catch { /* waveform is decoration; recording still works */ }
+}
+function stopWave() {
+  if (waveRaf) cancelAnimationFrame(waveRaf);
+  waveRaf = null; analyser = null;
+  if (waveCtx) waveCtx.clearRect(0, 0, waveCanvas.width, waveCanvas.height);
+  if (timerInt) { clearInterval(timerInt); timerInt = null; }
+  $("recordTimer").textContent = "";
+}
+function startTimer() {
+  recordStart = Date.now();
+  timerInt = setInterval(() => {
+    const s = Math.floor((Date.now() - recordStart) / 1000);
+    $("recordTimer").textContent = "● " + String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+  }, 500);
+}
+
+// --- helpers ---
+function showError(el, msg) {
+  el.textContent = msg;
+  el.hidden = !msg;
+}
+function blobUrl(b64, mime) {
+  const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+  return URL.createObjectURL(new Blob([bytes], { type: mime || "audio/mpeg" }));
+}
+async function api(path, opts) {
+  const res = await fetch(path, opts);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || ("Request failed (" + res.status + ")"));
+  return data;
+}
+function setSpeaking(on) {
+  $("kamAvatar").classList.toggle("speaking", on);
+  $("kamPanel").classList.toggle("speaking-on", on);
+  $("speakState").textContent = on ? "· speaking…" : "· listening";
+}
+$("replyAudio").addEventListener("play", () => setSpeaking(true));
+$("replyAudio").addEventListener("pause", () => setSpeaking(false));
+$("replyAudio").addEventListener("ended", () => setSpeaking(false));
+$("summaryAudio").addEventListener("play", () => setSpeaking(true));
+$("summaryAudio").addEventListener("pause", () => setSpeaking(false));
+$("summaryAudio").addEventListener("ended", () => setSpeaking(false));
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+}
+function addBubble(who, text) {
+  const log = $("conversationLog");
+  const div = document.createElement("div");
+  div.className = "bubble " + (who === "seller" ? "you" : "kam");
+  div.innerHTML = '<span class="b-tag">' + (who === "seller" ? "You said" : "Asha") + "</span><p>" + escapeHtml(text) + "</p>";
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+// --- health ---
+fetch("/api/health").then(async (res) => {
+  const data = await res.json().catch(() => ({}));
+  const el = $("healthText");
+  if (!res.ok || data.status !== "ok") { el.textContent = "Backend unreachable — start the server first."; return; }
+  const bits = [];
+  bits.push(data.gnani_configured ? "Voice: ready" : "Voice: not configured (set GNANI_API_KEY)");
+  bits.push(data.groq_configured ? "AI brain: ready" : "AI brain: standard guidance only (set GROQ_API_KEY)");
+  el.textContent = "Backend connected · " + bits.join(" · ");
+}).catch(() => { $("healthText").textContent = "Backend unreachable — start the server first."; });
+
+// --- language toggle ---
+document.querySelectorAll(".lang-btn").forEach((b) => {
+  b.addEventListener("click", () => {
+    language = b.dataset.lang;
+    document.querySelectorAll(".lang-btn").forEach((x) => { x.classList.remove("selected"); x.setAttribute("aria-checked", "false"); });
+    b.classList.add("selected");
+    b.setAttribute("aria-checked", "true");
+  });
+});
+
+// --- start call ---
+$("startBtn").addEventListener("click", async () => {
+  showError($("setupError"), "");
+  $("startBtn").disabled = true;
+  try {
+    const data = await api("/api/kam/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ language }),
+    });
+    sessionId = data.session_id;
+    $("setupCard").hidden = true;
+    $("callCard").hidden = false;
+    $("summaryCard").hidden = true;
+    $("conversationLog").innerHTML = "";
+    $("fallbackNote").hidden = true;
+    showReply(data.greeting_text, data.greeting_audio_base64, data.audio_mime);
+    addBubble("kam", data.greeting_text);
+    $("recordBtn").disabled = false;
+    $("micLabel").textContent = "Tap the mic and speak";
+    $("recordState").textContent = "";
+    stopWave();
+  } catch (err) {
+    showError($("setupError"), err.message || "Could not start the call.");
+  } finally {
+    $("startBtn").disabled = false;
+  }
+});
+
+function showReply(text, audioB64, audioMime) {
+  $("replyText").textContent = text;
+  const ra = $("replyAudio");
+  if (audioB64) { ra.src = blobUrl(audioB64, audioMime); ra.play().catch(() => {}); }
+  else { ra.removeAttribute("src"); }
+  $("progress").textContent = "Call in progress";
+}
+
+// --- recording ---
+function pickMimeType() {
+  if (typeof MediaRecorder === "undefined") return "";
+  if (MediaRecorder.isTypeSupported("audio/mp4")) return "audio/mp4";
+  if (MediaRecorder.isTypeSupported("audio/ogg;codecs=opus")) return "audio/ogg;codecs=opus";
+  return "";
+}
+function filenameFor(type) {
+  if (type.includes("mp4")) return "clip.m4a";
+  if (type.includes("ogg")) return "clip.ogg";
+  if (type.includes("wav")) return "clip.wav";
+  return "clip.m4a";
+}
+
+$("recordBtn").addEventListener("click", async () => {
+  if (recording) { stopRecording(); return; }
+  if (!sessionId) return;
+  if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+    showError($("callError"), "Voice input needs a browser with microphone recording (MediaRecorder).");
+    return;
+  }
+  showError($("callError"), "");
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mimeType = pickMimeType();
+    const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+    audioChunks = [];
+    recorder.ondataavailable = (e) => { if (e.data && e.data.size) audioChunks.push(e.data); };
+    recorder.onstop = () => {
+      stream.getTracks().forEach((t) => t.stop());
+      setRecording(false);
+      stopWave();
+      const blob = new Blob(audioChunks, { type: recorder.mimeType || "audio/mp4" });
+      audioChunks = [];
+      if (blob.size > 0) submitMessage(blob);
+      else showError($("callError"), "No audio was captured — please try again.");
+    };
+    mediaRecorder = recorder;
+    recorder.start();
+    setRecording(true);
+    startWave(stream);
+    startTimer();
+    recordTimer = setTimeout(stopRecording, 28000); // STT caps at 30 s
+  } catch {
+    showError($("callError"), "Microphone access was denied — allow it in the browser to speak.");
+  }
+});
+
+function setRecording(on) {
+  recording = on;
+  const btn = $("recordBtn");
+  btn.setAttribute("aria-pressed", on ? "true" : "false");
+  btn.innerHTML = on ? '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>';
+  btn.classList.toggle("recording", on);
+  $("micLabel").textContent = on ? "Recording — speak now" : "Tap the mic and speak";
+  $("recordState").textContent = on ? "Tap again to stop (max 28 s)." : "";
+}
+function stopRecording() {
+  if (recordTimer) { clearTimeout(recordTimer); recordTimer = null; }
+  if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
+  mediaRecorder = null;
+}
+
+async function submitMessage(blob) {
+  if (!sessionId) return;
+  $("busy").hidden = false;
+  $("recordBtn").disabled = true;
+  showError($("callError"), "");
+  try {
+    const form = new FormData();
+    form.append("audio", blob, filenameFor(blob.type));
+    const data = await api("/api/kam/talk?session_id=" + encodeURIComponent(sessionId), {
+      method: "POST",
+      body: form,
+    });
+    addBubble("seller", data.transcript);
+    addBubble("kam", data.reply_text);
+    showReply(data.reply_text, data.reply_audio_base64, data.audio_mime);
+    $("fallbackNote").hidden = !data.fallback;
+    $("recordBtn").disabled = false;
+  } catch (err) {
+    showError($("callError"), err.message || "Could not send that message.");
+    $("recordBtn").disabled = false;
+  } finally {
+    $("busy").hidden = true;
+  }
+}
+
+// --- end call & summary ---
+$("endBtn").addEventListener("click", async () => {
+  if (!sessionId) return;
+  $("endBtn").disabled = true;
+  $("recordBtn").disabled = true;
+  showError($("callError"), "");
+  try {
+    const data = await api("/api/kam/summary/" + encodeURIComponent(sessionId), { method: "POST" });
+    $("callCard").hidden = true;
+    $("summaryCard").hidden = false;
+    $("summaryText").textContent = data.summary_text || "";
+    const sa = $("summaryAudio");
+    if (data.summary_audio_base64) { sa.src = blobUrl(data.summary_audio_base64, data.audio_mime); sa.play().catch(() => {}); }
+    else { sa.removeAttribute("src"); }
+    fillList($("issuesList"), data.issues);
+    fillList($("recommendationsList"), data.recommendations);
+    fillList($("nextStepsList"), data.next_steps);
+  } catch (err) {
+    showError($("callError"), err.message || "Could not end the call.");
+    $("endBtn").disabled = false;
+    $("recordBtn").disabled = false;
+  }
+});
+function fillList(ul, items) {
+  ul.innerHTML = "";
+  (items || []).forEach((t) => {
+    const li = document.createElement("li");
+    li.textContent = t;
+    ul.appendChild(li);
+  });
+}
+
+$("againBtn").addEventListener("click", () => {
+  sessionId = null;
+  $("summaryCard").hidden = true;
+  $("callCard").hidden = true;
+  $("setupCard").hidden = false;
+  $("endBtn").disabled = false;
+});
+</script>
+</body>
+</html>
