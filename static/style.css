@@ -47,7 +47,10 @@ body {
   font-size: 16px;
   line-height: 1.55;
   color: var(--text);
-  background: linear-gradient(180deg, #fdf2f5 0, #ffffff 260px);
+  background:
+    radial-gradient(720px 320px at 85% -60px, rgba(228, 0, 70, 0.06), transparent 70%),
+    radial-gradient(640px 300px at -10% 0, rgba(255, 92, 138, 0.05), transparent 70%),
+    linear-gradient(180deg, #fdf2f5 0, #ffffff 280px);
   min-height: 100vh;
 }
 
@@ -71,9 +74,12 @@ a:focus:not(:focus-visible) { outline: none; }
 .head { animation: card-in 300ms var(--ease-out) both; }
 .card { animation: card-in 300ms var(--ease-out) 60ms both; }
 .foot { animation: card-in 300ms var(--ease-out) 120ms both; }
+/* Replays the same entrance when a card is unhidden (JS adds .card-enter
+   after toggling `hidden`); the base .card animation only runs on load. */
+.card-enter { animation: card-in 280ms var(--ease-out) both; }
 
 /* ---------- header ---------- */
-.head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+.head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1.75rem; }
 .brand { display: flex; align-items: center; gap: 0.85rem; }
 .logo {
   width: 52px; height: 52px; flex: none; border-radius: 16px;
@@ -101,8 +107,8 @@ a:focus:not(:focus-visible) { outline: none; }
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 1.5rem 1.5rem 1.75rem;
-  margin-bottom: 1.1rem;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 30px rgba(0, 0, 0, 0.06);
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 12px 32px rgba(26, 26, 26, 0.07), 0 2px 8px rgba(228, 0, 70, 0.03);
 }
 .card h2 { font-family: "Sora", "Inter", system-ui, sans-serif; margin: 0 0 0.25rem; font-size: 1.35rem; letter-spacing: -0.01em; }
 .card h3 { margin: 0; font-size: 1rem; color: var(--text); }
@@ -186,31 +192,53 @@ a:focus:not(:focus-visible) { outline: none; }
 
 /* ---------- call room ---------- */
 .progress-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1.1rem; }
+.progress-group { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; }
 .progress { font-size: 0.88rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); }
+.call-timer {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-size: 0.9rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--muted);
+  background: var(--panel-strong); border: 1px solid var(--line);
+  border-radius: 999px; padding: 0.2rem 0.65rem; line-height: 1.5;
+}
+.call-timer::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex: none; }
+
+/* Compact seller-data strip — the numbers stay visible while Asha talks. */
+.call-strip {
+  display: flex; flex-wrap: wrap; gap: 0.3rem 0.7rem;
+  margin-bottom: 1rem; padding: 0.55rem 0.8rem;
+  background: var(--panel-strong); border: 1px solid var(--line); border-radius: 12px;
+  font-size: 0.78rem; line-height: 1.5;
+}
+.cs-item { display: inline-flex; align-items: baseline; gap: 0.35rem; white-space: nowrap; }
+.cs-label { font-weight: 600; color: var(--faint); font-size: 0.68rem; letter-spacing: 0.02em; text-transform: uppercase; }
+.cs-value { font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.cs-was { color: var(--faint); font-size: 0.74rem; }
 
 .stage { display: grid; grid-template-columns: 1fr; gap: 1rem; }
 .person {
-  display: flex; gap: 1rem; align-items: flex-start;
+  display: flex; gap: 1.1rem; align-items: flex-start;
   background: var(--panel-strong); border: 1px solid var(--line);
-  border-radius: 16px; padding: 1.15rem 1.25rem;
+  border-radius: 16px; padding: 1.2rem 1.3rem;
   transition: border-color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
 }
 .person.speaking-on { border-color: rgba(228, 0, 70, 0.55); box-shadow: 0 0 0 1px rgba(228, 0, 70, 0.18), 0 8px 28px rgba(228, 0, 70, 0.12); }
 .avatar {
-  width: 56px; height: 56px; flex: none; border-radius: 50%; position: relative;
+  width: 68px; height: 68px; flex: none; border-radius: 50%; position: relative;
   display: grid; place-items: center;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   border: 2px solid #ffffff;
   box-shadow: 0 2px 10px rgba(228, 0, 70, 0.28);
+  transition: box-shadow 0.25s var(--ease-out);
 }
-.avatar svg { width: 30px; height: 30px; }
+.avatar svg { width: 34px; height: 34px; }
+.avatar.speaking { box-shadow: 0 0 0 6px rgba(228, 0, 70, 0.12), 0 8px 28px rgba(228, 0, 70, 0.35); }
 .avatar.speaking::after {
   content: ""; position: absolute; inset: -6px; border-radius: 50%;
   border: 2px solid var(--accent); opacity: 0.8;
   animation: pulse-ring 1.1s ease-out infinite;
 }
 @keyframes pulse-ring { 0% { transform: scale(0.92); opacity: 0.9; } 100% { transform: scale(1.25); opacity: 0; } }
-.who { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--faint); }
+.who { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--faint); }
 .who .live { color: var(--green); }
 .person.speaking-on .who .live { color: var(--accent); }
 .question { font-family: "Sora", "Inter", system-ui, sans-serif; font-size: 1.4rem; line-height: 1.45; margin: 0.3rem 0 0.6rem; letter-spacing: -0.01em; }
@@ -280,14 +308,34 @@ audio { display: none; }
 .mic-label { margin-top: 0.8rem; font-weight: 700; font-size: 1.02rem; }
 .mic-btn.recording ~ .mic-label { color: var(--red); }
 .mic-sub { color: var(--muted); font-size: 0.88rem; margin-top: 0.2rem; min-height: 1.2em; }
-.wave { width: 100%; max-width: 420px; height: 44px; margin-top: 0.6rem; }
+.wave { width: 100%; max-width: 420px; height: 56px; margin-top: 0.6rem; background: var(--panel-strong); border: 1px solid var(--line); border-radius: 12px; }
 .record-timer { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--red); margin-top: 0.35rem; min-height: 1.2em; }
 
-/* ---------- chat bubbles + conversation log ---------- */
-#conversationLog { margin-top: 1rem; max-height: 340px; overflow-y: auto; }
-.bubble { border-radius: 14px; padding: 0.85rem 1.05rem; margin-top: 0.85rem; line-height: 1.55; }
-.bubble.you { background: #f2f4f7; border: 1px solid #dde3ea; }
-.bubble.kam { background: var(--accent-tint); border: 1px solid var(--accent-tint-border); }
+/* ---------- chat-style conversation log ---------- */
+#conversationLog { margin-top: 1.1rem; max-height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.7rem; padding-right: 0.25rem; }
+@keyframes bubble-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.bubble {
+  border-radius: 14px; padding: 0.85rem 1.05rem; line-height: 1.55;
+  max-width: 85%; animation: bubble-in 200ms var(--ease-out) both;
+}
+.bubble.you { align-self: flex-end; background: #f2f4f7; border: 1px solid #dde3ea; border-bottom-right-radius: 4px; }
+.bubble.you .b-tag { text-align: right; }
+.bubble.kam {
+  align-self: flex-start; position: relative; padding-left: 3.2rem;
+  background: var(--accent-tint); border: 1px solid var(--accent-tint-border);
+  border-bottom-left-radius: 4px;
+}
+/* Small "A" initial for Asha — pure CSS, no markup or JS change. */
+.bubble.kam::before {
+  content: "A"; position: absolute; left: 0.9rem; top: 0.9rem;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff;
+  font-family: "Sora", "Inter", system-ui, sans-serif; font-size: 0.85rem; font-weight: 700;
+  display: grid; place-items: center;
+}
 .bubble .b-tag { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); display: block; margin-bottom: 0.25rem; }
 .bubble p { margin: 0.3rem 0; }
 
@@ -349,9 +397,11 @@ ul.bad li::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http
   .tagline { font-size: 0.95rem; }
   .question { font-size: 1.18rem; }
   .card { padding: 1.2rem 1.1rem 1.4rem; }
-  .person { padding: 1rem; gap: 0.8rem; }
-  .avatar { width: 48px; height: 48px; }
-  .avatar svg { width: 26px; height: 26px; }
+  .person { padding: 1rem; gap: 0.9rem; }
+  .avatar { width: 56px; height: 56px; }
+  .avatar svg { width: 30px; height: 30px; }
+  .call-strip { font-size: 0.8rem; gap: 0.3rem 0.8rem; }
+  .bubble { max-width: 92%; }
   .metrics { grid-template-columns: repeat(2, 1fr); }
   .metric:last-child { grid-column: span 2; }
   .mic-btn { width: 84px; height: 84px; }
