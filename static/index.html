@@ -28,10 +28,13 @@
   <section class="card" id="setupCard" aria-label="Start your call">
     <h2>Talk to your Virtual KAM</h2>
     <p class="sub">Asha will greet you, listen to what's happening with your sales, ask a few follow-up questions, and suggest practical actions — all by voice. No typing needed.</p>
-    <label class="field-label">Language</label>
-    <div class="lang-toggle" role="radiogroup" aria-label="Language">
-      <button type="button" class="lang-btn selected" data-lang="en-IN" role="radio" aria-checked="true">English</button>
-      <button type="button" class="lang-btn" data-lang="hi-IN" role="radio" aria-checked="false">हिन्दी</button>
+    <div class="lang-block">
+      <label class="field-label">Language</label>
+      <div class="lang-toggle" role="radiogroup" aria-label="Language">
+        <button type="button" class="lang-btn selected" data-lang="en-IN" role="radio" aria-checked="true">English</button>
+        <button type="button" class="lang-btn" data-lang="hi-IN" role="radio" aria-checked="false">हिन्दी</button>
+      </div>
+      <p class="lang-note">Asha speaks English and हिन्दी — choose the language for your call.</p>
     </div>
     <button type="button" class="primary big" id="startBtn"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>Start call with Asha</button>
     <p class="small hint">Voice-first: speak into your mic, Asha replies out loud. The full conversation shows on screen as you go.</p>
@@ -88,6 +91,30 @@
       </div>
     </div>
 
+    <div class="findings" id="findingsPanel" aria-label="What Asha found so far">
+      <div class="findings-head">
+        <strong>What Asha found</strong>
+        <span class="findings-note">Live — from your sales data and this call</span>
+      </div>
+      <ul class="findings-list" id="findingsList">
+        <li class="finding checking" data-finding="stockouts">
+          <span class="f-mark" aria-hidden="true"><span class="f-dots"><i></i><i></i><i></i></span><svg class="f-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <div class="f-body"><strong>Stock-outs</strong><span class="f-detail">Out-of-stock products 18 vs 5 (3.6×) — primary cause</span></div>
+          <span class="f-state">Checking</span>
+        </li>
+        <li class="finding checking" data-finding="cancellations">
+          <span class="f-mark" aria-hidden="true"><span class="f-dots"><i></i><i></i><i></i></span><svg class="f-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <div class="f-body"><strong>Cancellations</strong><span class="f-detail">Cancellation rate 14% (up from 8%) — secondary cause</span></div>
+          <span class="f-state">Checking</span>
+        </li>
+        <li class="finding checking" data-finding="pricing">
+          <span class="f-mark" aria-hidden="true"><span class="f-dots"><i></i><i></i><i></i></span><svg class="f-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <div class="f-body"><strong>Pricing</strong><span class="f-detail">Pricing ruled out — average selling price flat at ₹500</span></div>
+          <span class="f-state">Checking</span>
+        </li>
+      </ul>
+    </div>
+
     <div class="record-zone">
       <button type="button" class="mic-btn" id="recordBtn" aria-pressed="false" aria-label="Record your message"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg></button>
       <div class="mic-label" id="micLabel">Tap the mic and speak</div>
@@ -126,7 +153,10 @@
       <h3>Next steps</h3>
       <ul class="clean fix" id="nextStepsList"></ul>
     </div>
-    <button type="button" class="primary" id="againBtn">Start a new call</button>
+    <div class="summary-actions">
+      <button type="button" class="primary" id="downloadBtn"><span class="btn-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>Download action plan</button>
+      <button type="button" class="primary" id="againBtn">Start a new call</button>
+    </div>
   </section>
 
   <footer class="foot">
@@ -141,6 +171,7 @@ const $ = (id) => document.getElementById(id);
 
 let sessionId = null;
 let language = "en-IN";
+let lastSummary = null; // summary data for the downloadable action plan
 let mediaRecorder = null;
 let audioChunks = [];
 let recordTimer = null;
@@ -221,6 +252,24 @@ $("summaryAudio").addEventListener("ended", () => setSpeaking(false));
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
 }
+
+// --- live "What Asha found" panel: flip each finding from Checking to
+// Confirmed as the backend's findings list progresses. The numbers are
+// fixed in the markup (brief's data); only the status changes here.
+function renderFindings(list) {
+  if (!Array.isArray(list)) return;
+  const ul = $("findingsList");
+  if (!ul) return;
+  list.forEach((f) => {
+    const li = ul.querySelector('[data-finding="' + f.id + '"]');
+    if (!li) return;
+    const confirmed = f.status === "confirmed";
+    li.classList.toggle("confirmed", confirmed);
+    li.classList.toggle("checking", !confirmed);
+    const state = li.querySelector(".f-state");
+    if (state) state.textContent = confirmed ? "Confirmed" : "Checking";
+  });
+}
 function addBubble(who, text) {
   const log = $("conversationLog");
   const div = document.createElement("div");
@@ -267,6 +316,8 @@ $("startBtn").addEventListener("click", async () => {
     $("summaryCard").hidden = true;
     $("conversationLog").innerHTML = "";
     $("fallbackNote").hidden = true;
+    lastSummary = null;
+    renderFindings(data.findings);
     showReply(data.greeting_text, data.greeting_audio_base64, data.audio_mime);
     addBubble("kam", data.greeting_text);
     $("recordBtn").disabled = false;
@@ -366,6 +417,7 @@ async function submitMessage(blob) {
     addBubble("seller", data.transcript);
     addBubble("kam", data.reply_text);
     showReply(data.reply_text, data.reply_audio_base64, data.audio_mime);
+    renderFindings(data.findings);
     $("fallbackNote").hidden = !data.fallback;
     $("recordBtn").disabled = false;
   } catch (err) {
@@ -384,6 +436,7 @@ $("endBtn").addEventListener("click", async () => {
   showError($("callError"), "");
   try {
     const data = await api("/api/kam/summary/" + encodeURIComponent(sessionId), { method: "POST" });
+    lastSummary = data;
     $("callCard").hidden = true;
     $("summaryCard").hidden = false;
     $("summaryText").textContent = data.summary_text || "";
@@ -408,8 +461,48 @@ function fillList(ul, items) {
   });
 }
 
+// --- downloadable action plan (client-side only, no backend call) ---
+$("downloadBtn").addEventListener("click", () => {
+  if (!lastSummary) return;
+  const lines = [];
+  const dated = new Date().toLocaleString("en-IN", { dateStyle: "long", timeStyle: "short" });
+  lines.push("Snapdeal Virtual KAM — Action Plan");
+  lines.push("Generated: " + dated);
+  lines.push("");
+  lines.push("Seller data (mock data from the assignment brief):");
+  lines.push("- Sales: Rs 2,00,000 last month -> Rs 1,35,000 this month (-32.5%)");
+  lines.push("- Orders: 400 -> 270 (-32.5%)");
+  lines.push("- Cancellation rate: 8% -> 14%");
+  lines.push("- Average selling price: Rs 500 -> Rs 500 (flat)");
+  lines.push("- Out-of-stock products: 5 -> 18");
+  lines.push("");
+  lines.push("Summary:");
+  lines.push(lastSummary.summary_text || "");
+  lines.push("");
+  lines.push("Key issues:");
+  (lastSummary.issues || []).forEach((t, i) => lines.push((i + 1) + ". " + t));
+  lines.push("");
+  lines.push("Recommended actions:");
+  (lastSummary.recommendations || []).forEach((t, i) => lines.push((i + 1) + ". " + t));
+  lines.push("");
+  lines.push("Next steps:");
+  (lastSummary.next_steps || []).forEach((t, i) => lines.push((i + 1) + ". " + t));
+  lines.push("");
+  lines.push("Built with the Snapdeal Virtual KAM demo (Gnani Prisma STT + Timbre TTS, Groq openai/gpt-oss-120b). All seller data is mock data from the assignment brief.");
+  const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "Snapdeal-Virtual-KAM-Action-Plan.txt";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
 $("againBtn").addEventListener("click", () => {
   sessionId = null;
+  lastSummary = null;
   $("summaryCard").hidden = true;
   $("callCard").hidden = true;
   $("setupCard").hidden = false;

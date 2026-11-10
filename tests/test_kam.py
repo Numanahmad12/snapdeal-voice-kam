@@ -229,3 +229,94 @@ def test_system_prompt_contains_seller_data():
         assert fragment in kam.KAM_SYSTEM_PROMPT
     assert "not a pricing problem" in kam.KAM_SYSTEM_PROMPT.lower() or \
         "NOT a pricing problem" in kam.KAM_SYSTEM_PROMPT
+
+
+# ---------------------------------------------------------------------------
+# Live findings tracker (app/findings.py) — deterministic, no LLM call.
+# ---------------------------------------------------------------------------
+
+from app import findings as findings_mod
+
+
+def _statuses(history):
+    return {f["id"]: f["status"] for f in findings_mod.compute_findings(history)}
+
+
+def test_findings_all_checking_on_greeting_only():
+    history = [{"role": "assistant", "text": kam.GREETINGS["en-IN"]}]
+    result = findings_mod.compute_findings(history)
+    assert [f["id"] for f in result] == ["stockouts", "cancellations", "pricing"]
+    assert _statuses(history) == {
+        "stockouts": "checking",
+        "cancellations": "checking",
+        "pricing": "checking",
+    }
+    # Details are the brief's real numbers only — nothing invented.
+    assert "18 vs 5 (3.6×)" in result[0]["detail"]
+    assert "14% (up from 8%)" in result[1]["detail"]
+    assert "₹500" in result[2]["detail"]
+
+
+def test_findings_stockouts_confirmed_by_seller():
+    history = [{"role": "user", "text": "Yes, many of my best sellers are out of stock."}]
+    assert _statuses(history)["stockouts"] == "confirmed"
+    assert _statuses(history)["cancellations"] == "checking"
+
+
+def test_findings_cancellations_confirmed_by_any_mention():
+    history = [{"role": "assistant", "text": "Your cancellation rate has gone up from 8% to 14%."}]
+    assert _statuses(history)["cancellations"] == "confirmed"
+
+
+def test_findings_pricing_confirmed_by_seller_saying_unchanged():
+    history = [{"role": "user", "text": "I have not changed my prices."}]
+    assert _statuses(history)["pricing"] == "confirmed"
+
+
+def test_findings_pricing_confirmed_by_asha_ruling_it_out():
+    history = [{"role": "assistant", "text": "Your price is flat, so this is not a pricing problem."}]
+    assert _statuses(history)["pricing"] == "confirmed"
+
+
+def test_findings_all_confirmed_after_typical_second_turn():
+    history = [
+        {"role": "assistant", "text": kam.GREETINGS["en-IN"]},
+        {"role": "user", "text": "My sales have dropped this month, I don't know why."},
+        {"role": "assistant", "text": "Which of your products have gone out of stock — are they your usual bestsellers?"},
+        {"role": "user", "text": "Yes, many of my best sellers are out of stock, and I have had a lot of cancellations too. I have not changed my prices."},
+    ]
+    assert _statuses(history) == {
+        "stockouts": "confirmed",
+        "cancellations": "confirmed",
+        "pricing": "confirmed",
+    }
+
+
+def test_findings_in_start_and_talk_responses(voice_on, llm_on, monkeypatch):
+    """start returns all-checking findings; talk progresses them."""
+    body = _start("en-IN")
+    assert body["findings"] == [
+        {"id": "stockouts", "label": "Stock-outs",
+         "detail": "Out-of-stock products 18 vs 5 (3.6×) — primary cause",
+         "status": "checking"},
+        {"id": "cancellations", "label": "Cancellations",
+         "detail": "Cancellation rate 14% (up from 8%) — secondary cause",
+         "status": "checking"},
+        {"id": "pricing", "label": "Pricing",
+         "detail": "Pricing ruled out — average selling price flat at ₹500",
+         "status": "checking"},
+    ]
+
+    # Seller confirms all three in one message; Asha's reply also rules out pricing.
+    monkeypatch.setattr(
+        voice, "transcribe_audio",
+        lambda *a, **k: "Yes, my best sellers are out of stock and I have had a lot of cancellations too. I have not changed my prices.",
+    )
+    res = _talk(body["session_id"])
+    assert res.status_code == 200, res.text
+    statuses = {f["id"]: f["status"] for f in res.json()["findings"]}
+    assert statuses == {
+        "stockouts": "confirmed",
+        "cancellations": "confirmed",
+        "pricing": "confirmed",
+    }

@@ -109,11 +109,17 @@ a:focus:not(:focus-visible) { outline: none; }
 .sub { color: var(--muted); margin: 0 0 1rem; font-size: 0.95rem; }
 .field-label { display: block; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); margin: 1.1rem 0 0.55rem; }
 
-/* ---------- language toggle ---------- */
-.lang-toggle { display: inline-flex; background: #f0ecee; border: 1px solid var(--line); border-radius: 999px; padding: 4px; gap: 4px; }
+/* ---------- language toggle (prominent — Asha speaks English + Hindi) ---------- */
+.lang-block {
+  margin-top: 1.1rem; padding: 1rem 1.1rem 1.05rem; border-radius: 14px;
+  background: var(--accent-tint); border: 1px solid var(--accent-tint-border);
+}
+.lang-block .field-label { margin-top: 0; }
+.lang-note { margin: 0.7rem 0 0; font-size: 0.92rem; color: var(--muted); }
+.lang-toggle { display: inline-flex; background: #f0ecee; border: 1px solid var(--line); border-radius: 999px; padding: 5px; gap: 5px; }
 .lang-btn {
   border: none; background: transparent; color: var(--muted); cursor: pointer;
-  border-radius: 999px; padding: 0.5rem 1.15rem; font-size: 0.98rem; font-family: inherit; font-weight: 600;
+  border-radius: 999px; padding: 0.65rem 1.5rem; font-size: 1.05rem; font-family: inherit; font-weight: 600;
   transition: background 0.15s var(--ease-out), color 0.15s var(--ease-out), box-shadow 0.15s var(--ease-out);
 }
 .lang-btn.selected { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; box-shadow: 0 4px 14px rgba(228, 0, 70, 0.4); }
@@ -222,6 +228,37 @@ a:focus:not(:focus-visible) { outline: none; }
    the equaliser and the "speaking…" label instead. */
 audio { display: none; }
 
+/* ---------- live "What Asha found" panel ---------- */
+.findings {
+  margin-top: 1.1rem; padding: 1rem 1.1rem 1.05rem; border-radius: 14px;
+  background: var(--panel-strong); border: 1px solid var(--line);
+}
+.findings-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.4rem; margin-bottom: 0.7rem; }
+.findings-head strong { font-family: "Sora", "Inter", system-ui, sans-serif; font-size: 1rem; letter-spacing: -0.01em; }
+.findings-note { font-size: 0.82rem; color: var(--faint); }
+.findings-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.55rem; }
+.finding {
+  display: flex; align-items: flex-start; gap: 0.75rem;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 12px; padding: 0.7rem 0.85rem;
+  transition: border-color 0.2s var(--ease-out), opacity 0.2s var(--ease-out);
+}
+.finding.checking { opacity: 0.62; }
+.finding.confirmed { border-color: rgba(21, 128, 61, 0.45); }
+.f-mark { flex: none; width: 26px; height: 26px; display: grid; place-items: center; margin-top: 0.1rem; }
+.f-mark .f-check { width: 22px; height: 22px; color: var(--green); display: none; }
+.finding.confirmed .f-mark .f-check { display: block; }
+.finding.confirmed .f-mark .f-dots { display: none; }
+.f-dots { display: inline-flex; gap: 3px; }
+.f-dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--faint); animation: blink 1s infinite; }
+.f-dots i:nth-child(2) { animation-delay: 0.2s; }
+.f-dots i:nth-child(3) { animation-delay: 0.4s; }
+.f-body { flex: 1; min-width: 0; }
+.f-body strong { display: block; font-size: 0.95rem; }
+.f-detail { display: block; font-size: 0.88rem; color: var(--muted); line-height: 1.5; margin-top: 0.1rem; }
+.f-state { flex: none; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--faint); margin-top: 0.2rem; }
+.finding.confirmed .f-state { color: var(--green); }
+
 /* ---------- record ---------- */
 .record-zone { display: flex; flex-direction: column; align-items: center; padding: 1.1rem 0 0.2rem; }
 .mic-btn {
@@ -281,6 +318,8 @@ audio { display: none; }
 .sum-good { border-left: 3px solid var(--green); }
 .sum-fix { border-left: 3px solid var(--accent); }
 .sum-group .clean { margin-bottom: 0; }
+.summary-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
+.summary-actions .primary { margin-top: 0; display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem; }
 #summaryCard .primary { margin-top: 0.5rem; }
 ul.clean { margin: 0.25rem 0 0.5rem; padding-left: 0; list-style: none; }
 ul.clean li { padding: 0.35rem 0 0.35rem 1.7rem; position: relative; line-height: 1.55; color: var(--muted); }

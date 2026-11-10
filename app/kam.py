@@ -19,7 +19,7 @@ an assumption.
 import base64
 import uuid
 
-from . import llm, voice
+from . import findings, llm, voice
 
 MAX_VOICE_AUDIO_BYTES = 5 * 1024 * 1024
 AUDIO_MIME = "audio/mpeg"
@@ -138,6 +138,7 @@ def start_session(language: str) -> dict:
         "greeting_text": greeting,
         "greeting_audio_base64": _audio_b64(audio),
         "audio_mime": AUDIO_MIME,
+        "findings": findings.compute_findings(_sessions[session_id]["history"]),
     }
 
 
@@ -182,6 +183,7 @@ def talk(session_id: str, audio_bytes: bytes, filename: str) -> dict:
         "fallback": bool(reply.get("fallback")),
         "turns": len(session["history"]),
         "history": list(session["history"]),
+        "findings": findings.compute_findings(session["history"]),
     }
 
 
